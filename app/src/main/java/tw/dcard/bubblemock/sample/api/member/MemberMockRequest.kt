@@ -25,19 +25,19 @@ object MemberMockRequest {
         Member(
             id = 1920,
             name = "Batu Tasvaluan",
-            age = null,
+            age = 31,
             address = null
         ),
         Member(
             id = 2431,
             name = "Savugan",
-            age = null,
+            age = 1,
             address = null
         ),
         Member(
             id = 5244,
             name = "Langui Tasvaluan",
-            age = null,
+            age = 30,
             address = null
         )
     )

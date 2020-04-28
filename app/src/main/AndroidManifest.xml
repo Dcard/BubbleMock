@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="tw.dcard.bubblemock.sample">
 
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -19,6 +20,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!--  This is for mock-->
+        <activity
+            android:name=".screen.BubbleActivity"
+            android:allowEmbedded="true"
+            android:documentLaunchMode="always"
+            android:resizeableActivity="true"
+            tools:ignore="UnusedAttribute" />
     </application>
 
 </manifest>

@@ -7,6 +7,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import tw.dcard.bubblemock.Calculator
+import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.R
 import tw.dcard.bubblemock.sample.module.ViewModelFactory
 
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity() {
         setupViewModel()
 
         if (savedInstanceState == null) {
+            /*  You can control the interceptor by your own local project config.   */
+            // MockBubbleManager.getInstance().launchBubble(activity = this, isEnable = BuildConfig.ENABLE_MOCK)
+            MockBubbleManager.getInstance().launchBubble(activity = this, isEnable = true)
             Handler().postDelayed({
                 viewModel.getMemberInfo()
             }, 1000)

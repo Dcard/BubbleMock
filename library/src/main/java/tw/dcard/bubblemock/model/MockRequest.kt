@@ -1,7 +1,5 @@
 package tw.dcard.bubblemock.model
 
-import com.crazyma.mockbubble.model.MockApi
-
 /**
  * @author Batu
  */

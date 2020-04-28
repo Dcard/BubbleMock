@@ -7,15 +7,14 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import com.crazyma.mockbubble.BuildConfig
-import com.crazyma.mockbubble.R
-import com.crazyma.mockbubble.model.MimeType
 import tw.dcard.bubblemock.model.MockRequest
-import com.crazyma.mockbubble.screen.BubbleActivity
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import okhttp3.*
+import tw.dcard.bubblemock.R
+import tw.dcard.bubblemock.model.MimeType
+import tw.dcard.bubblemock.screen.BubbleActivity
 
 /**
  * @author Batu
@@ -86,11 +85,11 @@ class MockBubbleManager {
 
     fun launchBubble(activity: AppCompatActivity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            if (BuildConfig.DEBUG && BuildConfig.MOCK_BUBBLE) {
-                notifyBubble(activity)
-            } else {
-                removeBubbleChannel(activity)
-            }
+//            if (BuildConfig.DEBUG && BuildConfig.MOCK_BUBBLE) {
+//                notifyBubble(activity)
+//            } else {
+//                removeBubbleChannel(activity)
+//            }
         }
     }
 

@@ -1,4 +1,4 @@
-package tw.dcard.bubblemock.screen
+package tw.dcard.bubblemock.sample.screen
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

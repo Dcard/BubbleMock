@@ -14,7 +14,7 @@ import com.google.gson.JsonParser
 import okhttp3.*
 import tw.dcard.bubblemock.R
 import tw.dcard.bubblemock.model.MimeType
-import tw.dcard.bubblemock.screen.BubbleActivity
+import tw.dcard.bubblemock.sample.screen.BubbleActivity
 
 /**
  * @author Batu

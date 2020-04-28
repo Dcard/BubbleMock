@@ -1,4 +1,4 @@
-package tw.dcard.bubblemock.sample
+package tw.dcard.bubblemock.sample.module
 
 import android.annotation.SuppressLint
 import androidx.annotation.VisibleForTesting
@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import tw.dcard.bubblemock.sample.api.ApiStation
 import tw.dcard.bubblemock.sample.api.member.RemoteMemberRepository
+import tw.dcard.bubblemock.sample.screen.main.MainViewModel
 
 class ViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
 
@@ -15,9 +16,11 @@ class ViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
         @Volatile
         private var INSTANCE: ViewModelFactory? = null
 
-        fun getInstance() = INSTANCE ?: synchronized(ViewModelFactory::class.java) {
-            INSTANCE ?: ViewModelFactory(
-            ).also { INSTANCE = it }
+        fun getInstance() = INSTANCE
+            ?: synchronized(ViewModelFactory::class.java) {
+            INSTANCE
+                ?: ViewModelFactory(
+                ).also { INSTANCE = it }
         }
 
         @VisibleForTesting
@@ -35,7 +38,9 @@ class ViewModelFactory() : ViewModelProvider.NewInstanceFactory() {
 
                 isAssignableFrom(MainViewModel::class.java) -> {
                     val remoteMemberRepository = RemoteMemberRepository(apiStation.memberService)
-                    MainViewModel(remoteMemberRepository)
+                    MainViewModel(
+                        remoteMemberRepository
+                    )
                 }
 
                 else ->

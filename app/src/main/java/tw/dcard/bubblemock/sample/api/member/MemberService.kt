@@ -1,9 +1,7 @@
 package tw.dcard.bubblemock.sample.api.member
 
-import retrofit2.Call
 import retrofit2.http.GET
 import tw.dcard.bubblemock.sample.model.Member
-
 
 interface MemberService {
 

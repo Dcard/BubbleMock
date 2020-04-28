@@ -51,10 +51,12 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleKtxVersion"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleKtxVersion"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleKtxVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleKtxVersion"
     implementation "androidx.fragment:fragment-ktx:1.2.4"
 
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation project(':library')
+
 }

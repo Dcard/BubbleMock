@@ -43,8 +43,8 @@ class MainActivity : AppCompatActivity() {
                 swipeRefreshLayout.isRefreshing = false
             })
 
-            fetchMembersFailed.observe(this@MainActivity, Observer {
-                it.getContent()?.let { throwable ->
+            fetchMembersFailed.observe(this@MainActivity, Observer { liveEvent ->
+                liveEvent?.consume()?.let { throwable ->
                     Toast.makeText(this@MainActivity, throwable.message, Toast.LENGTH_LONG).show()
                 }
             })
@@ -74,13 +74,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun populateMembers(members: List<Member>?) {
+        val throwable = viewModel.fetchMembersFailed.value?.peek()
         val items = mutableListOf<MainAdapter.Item>().apply {
             if (members != null) {
                 if (members.isNotEmpty()) {
                     addAll(members.map { MainAdapter.MemberItem(it) })
-                    add(MainAdapter.TextItem("no more data."))
+                    add(MainAdapter.TextItem("No more data."))
                 } else {
-                    add(MainAdapter.TextItem("no data."))
+                    add(MainAdapter.TextItem("No data."))
+                }
+            } else {
+                if (throwable != null) {
+                    add(MainAdapter.TextItem(throwable.message?.let { "Error: $it" } ?: "Error!"))
                 }
             }
         }

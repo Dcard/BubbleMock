@@ -14,10 +14,11 @@ class MainViewModel(
 ) : ViewModel() {
 
     val members = MutableLiveData<List<Member>?>()
-    val fetchMembersFailed = MutableLiveData<LiveEvent<Throwable>>()
+    val fetchMembersFailed = MutableLiveData<LiveEvent<Throwable>?>()
 
     fun getMemberInfo() {
         viewModelScope.launch {
+            fetchMembersFailed.value = null
             delay(1000)
             members.value = try {
                 memberSource.getMembers()

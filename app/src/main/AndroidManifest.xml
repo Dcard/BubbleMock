@@ -27,6 +27,7 @@
             android:allowEmbedded="true"
             android:documentLaunchMode="always"
             android:resizeableActivity="true"
+            android:theme="@style/AppTheme.NoActionBar"
             tools:ignore="UnusedAttribute" />
     </application>
 

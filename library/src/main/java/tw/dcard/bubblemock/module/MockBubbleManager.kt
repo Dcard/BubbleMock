@@ -83,13 +83,13 @@ class MockBubbleManager {
         return null
     }
 
-    fun launchBubble(activity: AppCompatActivity) {
+    fun launchBubble(activity: AppCompatActivity, isEnable: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-//            if (BuildConfig.DEBUG && BuildConfig.MOCK_BUBBLE) {
-//                notifyBubble(activity)
-//            } else {
-//                removeBubbleChannel(activity)
-//            }
+            if (isEnable) {
+                notifyBubble(activity)
+            } else {
+                removeBubbleChannel(activity)
+            }
         }
     }
 

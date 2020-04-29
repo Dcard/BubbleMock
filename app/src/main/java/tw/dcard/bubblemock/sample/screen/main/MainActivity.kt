@@ -1,13 +1,17 @@
 package tw.dcard.bubblemock.sample.screen.main
 
 import android.os.Bundle
-import android.os.Handler
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import kotlinx.android.synthetic.main.activity_main.*
 import tw.dcard.bubblemock.Calculator
+import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.R
+import tw.dcard.bubblemock.sample.model.Member
 import tw.dcard.bubblemock.sample.module.ViewModelFactory
 
 class MainActivity : AppCompatActivity() {
@@ -21,26 +25,71 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         Calculator().add(1, 2)
         setupViewModel()
+        setupRecyclerView()
 
         if (savedInstanceState == null) {
-            Handler().postDelayed({
-                viewModel.getMemberInfo()
-            }, 1000)
+            /*  You can control the interceptor by your own local project config.   */
+            // MockBubbleManager.getInstance().launchBubble(activity = this, isEnable = BuildConfig.ENABLE_MOCK)
+            MockBubbleManager.getInstance().launchBubble(activity = this, isEnable = true)
+
+            refresh()
         }
     }
 
     private fun setupViewModel() {
         viewModel.apply {
             members.observe(this@MainActivity, Observer {
-                val message = "I got ${it?.size ?: 0} members"
-                Toast.makeText(this@MainActivity, message, Toast.LENGTH_LONG).show()
+                populateMembers(it)
+                swipeRefreshLayout.isRefreshing = false
             })
 
-            fetchMembersFailed.observe(this@MainActivity, Observer {
-                it.getContent()?.let { throwable ->
+            fetchMembersFailed.observe(this@MainActivity, Observer { liveEvent ->
+                liveEvent?.consume()?.let { throwable ->
                     Toast.makeText(this@MainActivity, throwable.message, Toast.LENGTH_LONG).show()
                 }
             })
         }
+    }
+
+    private fun setupRecyclerView() {
+        swipeRefreshLayout.setOnRefreshListener {
+            refresh()
+        }
+        recyclerView.apply {
+            layoutManager = LinearLayoutManager(context!!)
+            setHasFixedSize(true)
+            adapter = MainAdapter()
+            addItemDecoration(
+                DividerItemDecoration(
+                    this@MainActivity,
+                    DividerItemDecoration.VERTICAL
+                )
+            )
+        }
+    }
+
+    private fun refresh() {
+        populateMembers(null)
+        viewModel.getMemberInfo()
+    }
+
+    private fun populateMembers(members: List<Member>?) {
+        val throwable = viewModel.fetchMembersFailed.value?.peek()
+        val items = mutableListOf<MainAdapter.Item>().apply {
+            if (members != null) {
+                if (members.isNotEmpty()) {
+                    addAll(members.map { MainAdapter.MemberItem(it) })
+                    add(MainAdapter.TextItem("No more data."))
+                } else {
+                    add(MainAdapter.TextItem("No data."))
+                }
+            } else {
+                if (throwable != null) {
+                    add(MainAdapter.TextItem(throwable.message?.let { "Error: $it" } ?: "Error!"))
+                }
+            }
+        }
+
+        (recyclerView.adapter as MainAdapter).items = items
     }
 }

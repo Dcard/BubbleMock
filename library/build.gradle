@@ -6,6 +6,10 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    compileOptions {
+        kotlinOptions.freeCompilerArgs += ['-module-name', "tw.dcard.bubblemock"]
+    }
+
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 29

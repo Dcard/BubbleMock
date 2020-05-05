@@ -15,7 +15,7 @@ data class MockApi(
     }
 
     var htmlMethod: String = "GET"
-    var urlParams: MutableMap<String, String> = mutableMapOf()
+    var urlParams: MutableMap<String, String?> = mutableMapOf()
     var responseObject: Any? = null
 
     fun handle(request: Request): Any? {

@@ -14,7 +14,7 @@ It's a mock library for Retrofit in android development, to control http respons
 - 開發者可以在 api ready 之前就先行開發
 
 ## Demo
-![demo](/github_image/demo.gif)
+<img src="/github_image/demo.gif" width="300">
 
 # Setup
 

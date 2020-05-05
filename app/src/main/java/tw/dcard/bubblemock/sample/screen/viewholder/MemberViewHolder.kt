@@ -26,7 +26,7 @@ class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(member: Member) {
         nameTextView.text = member.name
-        member.age?.let { ageTextView.text = it.toString() }
-        member.address?.let { addressTextView.text = it }
+        ageTextView.text = member.age?.toString()
+        addressTextView.text = member.address
     }
 }

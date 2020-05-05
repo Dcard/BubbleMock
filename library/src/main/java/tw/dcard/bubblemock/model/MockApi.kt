@@ -58,9 +58,9 @@ data class MockApi(
         return responseObject
     }
 
-    class Params : LinkedHashMap<String, String>() {
+    class Params : LinkedHashMap<String, String?>() {
 
-        fun param(key: String, value: String) {
+        fun param(key: String, value: String?) {
             put(key, value)
         }
     }

@@ -16,6 +16,7 @@ data class MockApi(
 
     var htmlMethod: String = "GET"
     var urlParams: MutableMap<String, String?> = mutableMapOf()
+    var delay: Long = 0L
     var responseObject: Any? = null
 
     fun handle(request: Request): Any? {
@@ -77,6 +78,11 @@ data class MockApi(
 
     fun method(block: () -> String) {
         htmlMethod = block.invoke()
+    }
+
+    fun delay(block: () -> Long) {
+        val _delay = block.invoke()
+        delay = if (_delay < 0L) 0L else _delay
     }
 }
 

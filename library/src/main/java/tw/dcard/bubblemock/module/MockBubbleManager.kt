@@ -7,13 +7,13 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
-import tw.dcard.bubblemock.model.MockRequest
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
 import okhttp3.*
 import tw.dcard.bubblemock.R
 import tw.dcard.bubblemock.model.MimeType
+import tw.dcard.bubblemock.model.MockRequest
 import tw.dcard.bubblemock.sample.screen.BubbleActivity
 
 /**
@@ -53,6 +53,11 @@ class MockBubbleManager {
             if (mockRequest.selected) {
                 mockRequest.mockApiList.forEach { mockApi ->
                     mockApi.handle(request)?.let {
+                        try {
+                            Thread.sleep(mockApi.delay)
+                        } catch (t: Throwable) {
+                        }
+
                         return if (it is String) {
                             when (it) {
                                 RESPONSE_EMPTY -> emptyResponse(request)

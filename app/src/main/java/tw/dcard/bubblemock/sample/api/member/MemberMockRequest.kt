@@ -3,6 +3,7 @@ package tw.dcard.bubblemock.sample.api.member
 import tw.dcard.bubblemock.model.MockRequest
 import tw.dcard.bubblemock.model.api
 import tw.dcard.bubblemock.model.request
+import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.model.Member
 
 object MemberMockRequest {
@@ -19,11 +20,14 @@ object MemberMockRequest {
                 }
             }
         },
-        request(page = "Main Page", name = "Member List - lots") {
+        request(page = "Main Page", name = "Member List - lots data with long delay") {
             add {
                 api("members") {
                     response {
                         getMembers(20)
+                    }
+                    delay {
+                        3000L
                     }
                 }
             }
@@ -33,6 +37,15 @@ object MemberMockRequest {
                 api("members") {
                     response {
                         getMembers(0)
+                    }
+                }
+            }
+        },
+        request(page = "Main Page", name = "Member List - Error") {
+            add {
+                api("members") {
+                    response {
+                        MockBubbleManager.RESPONSE_ERROR
                     }
                 }
             }

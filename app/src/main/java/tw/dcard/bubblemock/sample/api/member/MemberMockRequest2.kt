@@ -11,7 +11,7 @@ object MemberMockRequest2 {
         //  DSL Declaration Method
         request(page = "Main Page", name = "Member List - same data") {
             select {
-                true
+                false
             }
             add {
                 api("members") {

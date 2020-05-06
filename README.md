@@ -1,4 +1,7 @@
 # BubbleMock
+
+[![](https://jitpack.io/v/Dcard/BubbleMock.svg)](https://jitpack.io/#Dcard/BubbleMock)
+
 It's a mock library for Retrofit in android development, to control http response in run-time.
 
 # Purpose
@@ -13,12 +16,15 @@ It's a mock library for Retrofit in android development, to control http respons
 - 測試員可以隨時決定 mock response，甚至決定使用 server 的資料
 - 開發者可以在 api ready 之前就先行開發
 
+## Demo
+<img src="/github_image/demo.gif" width="300">
 
 # Setup
 
-1. Import library
+1. Import library [![](https://jitpack.io/v/Dcard/BubbleMock.svg)](https://jitpack.io/#Dcard/BubbleMock)
+
 ```
-implementation 'com.github.Dcard:BubbleMock:0.0.3'
+implementation 'com.github.Dcard:BubbleMock:0.0.6'
 ```
 
 2. Init `MockBubbleManager` with `MockResource`

@@ -20,11 +20,14 @@ object MemberMockRequest {
                 }
             }
         },
-        request(page = "Main Page", name = "Member List - lots") {
+        request(page = "Main Page", name = "Member List - lots data with long delay") {
             add {
                 api("members") {
                     response {
                         getMembers(20)
+                    }
+                    delay {
+                        3000L
                     }
                 }
             }

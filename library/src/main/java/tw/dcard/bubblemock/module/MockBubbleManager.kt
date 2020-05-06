@@ -53,6 +53,11 @@ class MockBubbleManager {
             if (mockRequest.selected) {
                 mockRequest.mockApiList.forEach { mockApi ->
                     mockApi.handle(request)?.let {
+                        try {
+                            Thread.sleep(mockApi.delay)
+                        } catch (t: Throwable) {
+                        }
+
                         return if (it is String) {
                             when (it) {
                                 RESPONSE_EMPTY -> emptyResponse(request)

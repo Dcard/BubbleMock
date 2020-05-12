@@ -3,7 +3,7 @@ package tw.dcard.bubblemock.model
 /**
  * @author Batu
  */
-data class MockRequest(
+data class MockScenario(
     val page: String,
     val name: String
 ) {
@@ -18,8 +18,8 @@ data class MockRequest(
     }
 }
 
-fun request(page: String, name: String, init: MockRequest.() -> Unit): MockRequest {
-    val mockRequest = MockRequest(page, name)
+fun scenario(page: String, name: String, init: MockScenario.() -> Unit): MockScenario {
+    val mockRequest = MockScenario(page, name)
     mockRequest.init()
     return mockRequest
 }

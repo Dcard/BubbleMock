@@ -1,15 +1,15 @@
 package tw.dcard.bubblemock.sample.api.member
 
 import tw.dcard.bubblemock.model.MockApi
-import tw.dcard.bubblemock.model.MockRequest
+import tw.dcard.bubblemock.model.MockScenario
 import tw.dcard.bubblemock.model.api
-import tw.dcard.bubblemock.model.request
+import tw.dcard.bubblemock.model.scenario
 
-object MemberMockRequest2 {
+object MemberMockScenario2 {
 
-    fun create(): List<MockRequest> = listOf(
+    fun create(): List<MockScenario> = listOf(
         //  DSL Declaration Method
-        request(page = "Main Page", name = "Member List - same data") {
+        scenario(page = "Main Page", name = "Member List - same data") {
             select {
                 false
             }
@@ -22,7 +22,7 @@ object MemberMockRequest2 {
             }
         },
         //  Regular Declaration Method
-        MockRequest(page = "Main Page", name = "Member List - same data with address").apply {
+        MockScenario(page = "Main Page", name = "Member List - same data with address").apply {
             mockApiList = mutableListOf(
                 MockApi(listOf("members")).apply {
                     responseObject = getMembersWithAddress()

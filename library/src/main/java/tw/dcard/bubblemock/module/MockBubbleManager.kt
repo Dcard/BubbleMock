@@ -13,7 +13,7 @@ import com.google.gson.JsonParser
 import okhttp3.*
 import tw.dcard.bubblemock.R
 import tw.dcard.bubblemock.model.MimeType
-import tw.dcard.bubblemock.model.MockRequest
+import tw.dcard.bubblemock.model.MockScenario
 import tw.dcard.bubblemock.sample.screen.BubbleActivity
 
 /**
@@ -46,7 +46,7 @@ class MockBubbleManager {
         }
     }
 
-    var mockOperationModels: List<MockRequest>? = null
+    var mockOperationModels: List<MockScenario>? = null
 
     fun handle(request: Request): Response? {
         mockOperationModels?.forEach { mockRequest ->

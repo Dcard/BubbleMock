@@ -1,14 +1,14 @@
 package tw.dcard.bubblemock.sample.api.member
 
-import tw.dcard.bubblemock.model.MockRequest
+import tw.dcard.bubblemock.model.MockScenario
 import tw.dcard.bubblemock.model.api
-import tw.dcard.bubblemock.model.request
+import tw.dcard.bubblemock.model.scenario
 import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.model.Member
 
-object MemberMockRequest {
-    fun create(): List<MockRequest> = listOf(
-        request(page = "Main Page", name = "Member List - several") {
+object MemberMockScenario {
+    fun create(): List<MockScenario> = listOf(
+        scenario(page = "Main Page", name = "Member List - several") {
             select {
                 true
             }
@@ -20,7 +20,7 @@ object MemberMockRequest {
                 }
             }
         },
-        request(page = "Main Page", name = "Member List - lots data with long delay") {
+        scenario(page = "Main Page", name = "Member List - lots data with long delay") {
             add {
                 api("members") {
                     response {
@@ -32,7 +32,7 @@ object MemberMockRequest {
                 }
             }
         },
-        request(page = "Main Page", name = "Member List - empty") {
+        scenario(page = "Main Page", name = "Member List - empty") {
             add {
                 api("members") {
                     response {
@@ -41,7 +41,7 @@ object MemberMockRequest {
                 }
             }
         },
-        request(page = "Main Page", name = "Member List - Error") {
+        scenario(page = "Main Page", name = "Member List - Error") {
             add {
                 api("members") {
                     response {

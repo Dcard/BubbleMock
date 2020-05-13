@@ -18,4 +18,4 @@ It's a mock library for Retrofit in android development, to control http respons
 <img src="/github_image/demo.gif" width="300">
 
 ## Setup
-You can check wiki.
+You can check [wiki](https://github.com/Dcard/BubbleMock/wiki).

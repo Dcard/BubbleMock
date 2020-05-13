@@ -9,7 +9,7 @@ It's a mock library for Retrofit in android development, to control http respons
 - Enable mock response in run-time
 
 ## Advantage
-- Don't have to change the app logic
+- You don't have to change the app logic.
 - You can just mock several api endpoints, other api endpoints would send request to server.
 - You can enable/disable mock api endpoint when app is running.
 - You can develop android app even the server is not ready.

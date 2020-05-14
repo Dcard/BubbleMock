@@ -2,7 +2,7 @@
 
 [![](https://jitpack.io/v/Dcard/BubbleMock.svg)](https://jitpack.io/#Dcard/BubbleMock)
 
-It's a mock library for Retrofit in android development, to control http response in run time by Bubble Interface.
+It's a mock library for Retrofit/OkHttp in android development, to control mock response in run time by Bubble Interface.
 
 ## Feature
 - Create mock response

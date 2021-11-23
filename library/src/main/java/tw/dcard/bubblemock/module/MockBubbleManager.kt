@@ -10,7 +10,11 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import tw.dcard.bubblemock.R
 import tw.dcard.bubblemock.model.MimeType
 import tw.dcard.bubblemock.model.MockScenario
@@ -154,9 +158,9 @@ class MockBubbleManager {
 
     private fun jsonResponse(request: Request, obj: Any): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), Gson().toJson(obj)))
+        body(Gson().toJson(obj).toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         code(200)
-        message("Mocked response of ${request.method()} ${request.url()}")
+        message("Mocked response of ${request.method} ${request.url}")
         protocol(Protocol.HTTP_1_1)
         request(request)
         build()
@@ -165,9 +169,9 @@ class MockBubbleManager {
     private fun jsonResponse(request: Request, bodyString: String): Response =
         Response.Builder().run {
             addHeader("content-type", MimeType.JSON)
-            body(ResponseBody.create(MediaType.parse(MimeType.JSON), bodyString))
+            body(bodyString.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
             code(200)
-            message("Mocked response of ${request.method()} ${request.url()}")
+            message("Mocked response of ${request.method} ${request.url}")
             protocol(Protocol.HTTP_1_1)
             request(request)
             build()
@@ -176,7 +180,7 @@ class MockBubbleManager {
     private fun emptyResponse(request: Request): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
         code(204)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), ""))
+        body("".toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -186,7 +190,7 @@ class MockBubbleManager {
     private fun errorResponse(request: Request): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
         code(501)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), ""))
+        body("".toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -197,7 +201,7 @@ class MockBubbleManager {
         val content = "{\"error\":1202,\"message\":\"Post not found\"}"
         addHeader("content-type", MimeType.JSON)
         code(404)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), content))
+        body(content.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -209,7 +213,7 @@ class MockBubbleManager {
             "{\"error\":\"insufficient_scope\",\"error_description\":\"Scope is insufficient\",\"scope\":\"match\"}"
         addHeader("content-type", MimeType.JSON)
         code(403)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), content))
+        body(content.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)

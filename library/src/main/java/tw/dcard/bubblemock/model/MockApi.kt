@@ -20,14 +20,14 @@ data class MockApi(
     var responseObject: Any? = null
 
     fun handle(request: Request): Any? {
-        val url = request.url()
-        val segments = url.pathSegments()
+        val url = request.url
+        val segments = url.pathSegments
 
         if (responseObject == null) {
             return null
         }
 
-        if (request.method() != htmlMethod) {
+        if (request.method != htmlMethod) {
             return null
         }
 
@@ -41,7 +41,7 @@ data class MockApi(
             }
         }
 
-        if (url.querySize() != urlParams.size) {
+        if (url.querySize != urlParams.size) {
             return null
         }
 

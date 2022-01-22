@@ -33,7 +33,7 @@ class BubbleBuilder(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun build(): Notification {
-        val icon = Icon.createWithResource(context, R.drawable.ic_router_white_24dp)
+        val icon = Icon.createWithResource(context, R.drawable.ic_sharp_account_circle_24)
         val notificationBuilder = getNotificationBuilder()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             val person = Person.Builder()
@@ -68,7 +68,7 @@ class BubbleBuilder(
         // notification works as a normal notification as well.
         with(notificationBuilder) {
             setContentText(MESSAGE_FOR_BUBBLE_DISABLE)
-            setSmallIcon(R.drawable.ic_router_white_24dp)
+            setSmallIcon(R.drawable.ic_round_adb_24)
             setCategory(Notification.CATEGORY_MESSAGE)
             setContentIntent(getPendingIntent())
             setShowWhen(true)

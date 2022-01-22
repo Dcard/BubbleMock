@@ -1,20 +1,23 @@
 package tw.dcard.bubblemock.module
 
 import android.annotation.TargetApi
-import android.app.*
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
-import android.content.Intent
-import android.graphics.drawable.Icon
+import android.content.pm.ShortcutManager
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
 import com.google.gson.JsonParser
-import okhttp3.*
-import tw.dcard.bubblemock.R
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.Protocol
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.ResponseBody.Companion.toResponseBody
 import tw.dcard.bubblemock.model.MimeType
 import tw.dcard.bubblemock.model.MockScenario
-import tw.dcard.bubblemock.sample.screen.BubbleActivity
 
 /**
  * @author Batu
@@ -27,10 +30,8 @@ class MockBubbleManager {
         const val RESPONSE_SERVER_ERROR = "server_error"
         const val RESPONSE_SCOPE_ERROR = "scope_error"
 
-        private const val CHANNEL_ID = "mock_bubble"
-        private const val CHANNEL_NAME = "Mock Bubble "
-        private const val CHANNEL_MESSAGE = "choose mock data sources"
-        private const val NOTIFICATION_PERSON_NAME = "Mock Bubble Bot"
+        private const val CHANNEL_ID = "mock_bubble_channel"
+        private const val CHANNEL_NAME = "Mock Bubble Channel"
 
         private var INSTANCE: MockBubbleManager? = null
 
@@ -66,7 +67,7 @@ class MockBubbleManager {
                                 RESPONSE_SCOPE_ERROR -> scopeErrorResponse(request)
                                 else -> {
                                     try {
-                                        val jsonElement = JsonParser().parse(it)
+                                        val jsonElement = JsonParser.parseString(it)
                                         if (jsonElement.isJsonObject || jsonElement.isJsonArray) {
                                             jsonResponse(request, it)
                                         } else {
@@ -98,11 +99,14 @@ class MockBubbleManager {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun notifyBubble(activity: AppCompatActivity) {
         val notificationManager =
             activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val shortcutManager =
+            activity.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
 
+        // create channel
         val channel = NotificationChannel(
             CHANNEL_ID,
             CHANNEL_NAME,
@@ -110,38 +114,8 @@ class MockBubbleManager {
         )
         notificationManager.createNotificationChannel(channel)
 
-        // Create bubble intent
-        val target = Intent(activity, BubbleActivity::class.java)
-        val bubbleIntent = PendingIntent.getActivity(activity, 0, target, 0 /* flags */)
-
-        // Create bubble metadata
-        val bubbleData = Notification.BubbleMetadata.Builder()
-            .setDesiredHeight(600)
-            .setIcon(Icon.createWithResource(activity, R.drawable.ic_router_white_24dp))
-            .setIntent(bubbleIntent)
-            .setAutoExpandBubble(true)
-            .build()
-
-        // Create notification
-        val chatBot = Person.Builder()
-            .setBot(true)
-            .setName(NOTIFICATION_PERSON_NAME)
-            .setImportant(true)
-            .build()
-
-        val builder = Notification.Builder(activity, CHANNEL_ID)
-            .setContentTitle(CHANNEL_NAME)
-            .setContentText(CHANNEL_MESSAGE)
-            .setContentIntent(bubbleIntent)
-            .setSmallIcon(R.drawable.ic_router_white_24dp)
-            .setBubbleMetadata(bubbleData)
-            .setAutoCancel(true)
-            .addPerson(chatBot)
-
-        val notificationId = 1
-        val notification = builder.build()
-
-        notificationManager.notify(notificationId, notification)
+        val notification = BubbleBuilder(activity, shortcutManager, CHANNEL_ID).build()
+        notificationManager.notify(1, notification)
     }
 
     @TargetApi(Build.VERSION_CODES.Q)
@@ -154,9 +128,9 @@ class MockBubbleManager {
 
     private fun jsonResponse(request: Request, obj: Any): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), Gson().toJson(obj)))
+        body(Gson().toJson(obj).toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         code(200)
-        message("Mocked response of ${request.method()} ${request.url()}")
+        message("Mocked response of ${request.method} ${request.url}")
         protocol(Protocol.HTTP_1_1)
         request(request)
         build()
@@ -165,9 +139,9 @@ class MockBubbleManager {
     private fun jsonResponse(request: Request, bodyString: String): Response =
         Response.Builder().run {
             addHeader("content-type", MimeType.JSON)
-            body(ResponseBody.create(MediaType.parse(MimeType.JSON), bodyString))
+            body(bodyString.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
             code(200)
-            message("Mocked response of ${request.method()} ${request.url()}")
+            message("Mocked response of ${request.method} ${request.url}")
             protocol(Protocol.HTTP_1_1)
             request(request)
             build()
@@ -176,7 +150,7 @@ class MockBubbleManager {
     private fun emptyResponse(request: Request): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
         code(204)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), ""))
+        body("".toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -186,7 +160,7 @@ class MockBubbleManager {
     private fun errorResponse(request: Request): Response = Response.Builder().run {
         addHeader("content-type", MimeType.JSON)
         code(501)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), ""))
+        body("".toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -197,7 +171,7 @@ class MockBubbleManager {
         val content = "{\"error\":1202,\"message\":\"Post not found\"}"
         addHeader("content-type", MimeType.JSON)
         code(404)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), content))
+        body(content.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)
@@ -209,7 +183,7 @@ class MockBubbleManager {
             "{\"error\":\"insufficient_scope\",\"error_description\":\"Scope is insufficient\",\"scope\":\"match\"}"
         addHeader("content-type", MimeType.JSON)
         code(403)
-        body(ResponseBody.create(MediaType.parse(MimeType.JSON), content))
+        body(content.toResponseBody(MimeType.JSON.toMediaTypeOrNull()))
         message("mock error")
         protocol(Protocol.HTTP_1_1)
         request(request)

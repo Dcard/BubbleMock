@@ -15,8 +15,8 @@ data class MockApiModel(
     lateinit var responseObject: Any
 
     fun handle(request: Request): Any? {
-        val url = request.url()
-        val segments = url.pathSegments()
+        val url = request.url
+        val segments = url.pathSegments
 
         if (segments.size != urlSpec.size) {
             return null
@@ -28,7 +28,7 @@ data class MockApiModel(
             }
         }
 
-        if (request.method() != method) {
+        if (request.method != method) {
             return null
         }
 

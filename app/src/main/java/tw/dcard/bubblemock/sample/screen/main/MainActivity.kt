@@ -8,7 +8,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_main.*
-import tw.dcard.bubblemock.Calculator
 import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.R
 import tw.dcard.bubblemock.sample.model.Member
@@ -23,7 +22,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Calculator().add(1, 2)
         setupViewModel()
         setupRecyclerView()
 

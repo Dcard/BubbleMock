@@ -67,7 +67,7 @@ class MockBubbleManager {
                                 RESPONSE_SCOPE_ERROR -> scopeErrorResponse(request)
                                 else -> {
                                     try {
-                                        val jsonElement = JsonParser().parse(it)
+                                        val jsonElement = JsonParser.parseString(it)
                                         if (jsonElement.isJsonObject || jsonElement.isJsonArray) {
                                             jsonResponse(request, it)
                                         } else {

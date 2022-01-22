@@ -4,8 +4,12 @@ import android.annotation.TargetApi
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.google.gson.JsonParseException
@@ -35,6 +39,8 @@ class MockBubbleManager {
         private const val CHANNEL_NAME = "Mock Bubble "
         private const val CHANNEL_MESSAGE = "choose mock data sources"
         private const val NOTIFICATION_PERSON_NAME = "Mock Bubble Bot"
+
+        private const val CHANNEL_NEW_BUBBLE = "new_bubble"
 
         private var INSTANCE: MockBubbleManager? = null
 
@@ -95,14 +101,156 @@ class MockBubbleManager {
     fun launchBubble(activity: AppCompatActivity, isEnable: Boolean) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (isEnable) {
-                notifyBubble(activity)
+                notifyBubble2(activity)
             } else {
                 removeBubbleChannel(activity)
             }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.Q)
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun notifyBubble2(activity: AppCompatActivity) {
+        val notificationManager =
+            activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val shortcutManager = activity.getSystemService(Context.SHORTCUT_SERVICE) as ShortcutManager
+
+        val channel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_HIGH
+        )
+        notificationManager.createNotificationChannel(channel)
+
+        //create person
+        val icon = Icon.createWithResource(activity, R.drawable.ic_router_white_24dp)
+//        val contentUri = createContentUri(simpleMessage.sender)
+
+        val builder = getNotificationBuilder(activity)
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+            val person = Person.Builder()
+                .setName(NOTIFICATION_PERSON_NAME)
+                .setIcon(icon)
+                .setImportant(true)
+                .build()
+            val bubbleData = createBubbleMetadata(activity, icon)
+
+            val shortcut = createDynamicShortcut(
+                context = activity,
+                icon = icon,
+                person = person
+            )
+            addDynamicShortcut(shortcutManager, shortcut)
+            with(builder) {
+                setBubbleMetadata(bubbleData)
+                style = Notification.MessagingStyle(person).addMessage(
+                    Notification.MessagingStyle.Message(
+                        "Messaging Style Message",
+                        System.currentTimeMillis(),
+                        person
+                    )
+                )
+                setShortcutId(shortcut.id)
+                addPerson(person)
+            }
+
+        }
+
+        // The user can turn off the bubble in system settings. In that case, this notification
+        // is shown as a normal notification instead of a bubble. Make sure that this
+        // notification works as a normal notification as well.
+        with(builder) {
+            setContentTitle(
+                "Content Title"
+            )
+            setSmallIcon(R.drawable.ic_router_white_24dp)
+            setCategory(Notification.CATEGORY_MESSAGE)
+            setContentIntent(
+                PendingIntent.getActivity(
+                    activity,
+                    0,
+                    // Launch BubbleActivity as the expanded bubble.
+                    Intent(activity, BubbleActivity::class.java)
+                        .setAction(Intent.ACTION_VIEW),
+                    PendingIntent.FLAG_UPDATE_CURRENT
+                )
+            )
+            setShowWhen(true)
+        }
+
+        notificationManager.notify(1, builder.build())
+    }
+
+    private fun getNotificationBuilder(context : Context): Notification.Builder {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(context, CHANNEL_ID)
+        } else {
+            Notification.Builder(context)
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun createBubbleMetadata(
+        context: Context,
+        icon: Icon
+    ): Notification.BubbleMetadata {
+        // Create bubble intent
+        val bubbleIntent =
+            PendingIntent.getActivity(
+                context,
+                0,
+                // Launch BubbleActivity as the expanded bubble.
+                Intent(context, BubbleActivity::class.java)
+                    .setAction(Intent.ACTION_VIEW),
+                PendingIntent.FLAG_UPDATE_CURRENT
+            )
+
+        // Create bubble metadata
+        val builder = if (atLeastAndroid11()) {
+            Notification.BubbleMetadata.Builder(bubbleIntent, icon)
+        } else {
+            Notification.BubbleMetadata.Builder()
+                .setIntent(bubbleIntent)
+                .setIcon(icon)
+        }
+        return builder
+            .setDesiredHeight(600)
+            .setAutoExpandBubble(true)
+            .setSuppressNotification(true)
+            .build()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.Q)
+    private fun createDynamicShortcut(
+        context: Context,
+        icon: Icon,
+        person: Person
+    ): ShortcutInfo {
+        return ShortcutInfo.Builder(context, "XD")
+            .setLongLived(true)
+            .setIntent(
+                Intent(context, BubbleActivity::class.java)
+                    .setAction(Intent.ACTION_VIEW)
+            )
+            .setShortLabel("Sender")
+            .setIcon(icon)
+            .setPerson(person)
+            .build()
+    }
+
+    private fun atLeastAndroid11() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
+    private fun addDynamicShortcut(shortcutManager: ShortcutManager, shortcut: ShortcutInfo) {
+        if (atLeastAndroid11()) {
+            shortcutManager.pushDynamicShortcut(shortcut)
+        } else {
+            shortcutManager.addDynamicShortcuts(listOf(shortcut))
+        }
+    }
+
+
+    @TargetApi(Build.VERSION_CODES.R)
     private fun notifyBubble(activity: AppCompatActivity) {
         val notificationManager =
             activity.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -117,20 +265,34 @@ class MockBubbleManager {
         // Create bubble intent
         val target = Intent(activity, BubbleActivity::class.java)
         val bubbleIntent = PendingIntent.getActivity(activity, 0, target, 0 /* flags */)
+        val category = "com.example.category.IMG_SHARE_TARGET"
 
-        // Create bubble metadata
-        val bubbleData = Notification.BubbleMetadata.Builder()
-            .setDesiredHeight(600)
-            .setIcon(Icon.createWithResource(activity, R.drawable.ic_router_white_24dp))
-            .setIntent(bubbleIntent)
-            .setAutoExpandBubble(true)
-            .build()
+
 
         // Create notification
         val chatBot = Person.Builder()
-            .setBot(true)
             .setName(NOTIFICATION_PERSON_NAME)
             .setImportant(true)
+            .build()
+
+        // Create sharing shortcut
+        val shortcutId = "shortcut_id".toString()
+        val shortcut =
+            ShortcutInfo.Builder(activity, shortcutId)
+                .setCategories(setOf(category))
+                .setIntent(Intent(Intent.ACTION_DEFAULT))
+                .setLongLived(true)
+                .setShortLabel(chatBot.name.toString())
+                .build()
+
+        // Create bubble metadata
+        val bubbleData = Notification.BubbleMetadata.Builder(
+            bubbleIntent, Icon.createWithResource(activity, R.drawable.ic_router_white_24dp)
+        )
+            .setDesiredHeight(600)
+//            .setIcon()
+//            .setIntent(bubbleIntent)
+//            .setAutoExpandBubble(true)
             .build()
 
         val builder = Notification.Builder(activity, CHANNEL_ID)
@@ -139,8 +301,17 @@ class MockBubbleManager {
             .setContentIntent(bubbleIntent)
             .setSmallIcon(R.drawable.ic_router_white_24dp)
             .setBubbleMetadata(bubbleData)
-            .setAutoCancel(true)
-            .addPerson(chatBot)
+            .setShortcutId(shortcutId)
+//            .setAutoCancel(true)
+            .addPerson(chatBot).apply{
+                style = Notification.MessagingStyle(chatBot).addMessage(
+                    Notification.MessagingStyle.Message(
+                        "XDD",
+                        System.currentTimeMillis(),
+                        chatBot
+                    )
+                )
+            }
 
         val notificationId = 1
         val notification = builder.build()

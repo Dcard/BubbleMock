@@ -78,12 +78,16 @@ class BubbleBuilder(
     }
 
     private fun getPendingIntent(): PendingIntent {
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_MUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        } else {
+            PendingIntent.FLAG_UPDATE_CURRENT
+        }
         return PendingIntent.getActivity(
             context,
             0,
-            Intent(context, BubbleActivity::class.java)
-                .setAction(Intent.ACTION_VIEW),
-            PendingIntent.FLAG_UPDATE_CURRENT
+            Intent(context, BubbleActivity::class.java).setAction(Intent.ACTION_VIEW),
+            flags
         )
     }
 

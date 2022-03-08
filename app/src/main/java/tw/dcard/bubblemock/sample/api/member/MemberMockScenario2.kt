@@ -1,9 +1,6 @@
 package tw.dcard.bubblemock.sample.api.member
 
-import tw.dcard.bubblemock.model.MockApi
-import tw.dcard.bubblemock.model.MockScenario
-import tw.dcard.bubblemock.model.api
-import tw.dcard.bubblemock.model.scenario
+import tw.dcard.bubblemock.model.*
 
 object MemberMockScenario2 {
 
@@ -14,7 +11,7 @@ object MemberMockScenario2 {
                 false
             }
             add {
-                api("members") {
+                apiDetail("members") {
                     response {
                         getMembers()
                     }
@@ -24,7 +21,7 @@ object MemberMockScenario2 {
         //  Regular Declaration Method
         MockScenario(page = "Main Page", name = "Member List - same data with address").apply {
             mockApiList = mutableListOf(
-                MockApi(listOf("members")).apply {
+                MockApi(UrlSpec.Detail(listOf("members"))).apply {
                     responseObject = getMembersWithAddress()
                 }
             )

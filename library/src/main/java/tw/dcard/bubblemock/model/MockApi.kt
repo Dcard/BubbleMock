@@ -1,12 +1,13 @@
 package tw.dcard.bubblemock.model
 
+import android.util.Log
 import okhttp3.Request
 
 /**
  * @author Batu
  */
 data class MockApi(
-    private val urlSpecs: List<String>
+    private val urlSpec: UrlSpec
 ) {
 
     companion object {
@@ -15,12 +16,13 @@ data class MockApi(
     }
 
     var htmlMethod: String = "GET"
-    var urlParams: MutableMap<String, String?> = mutableMapOf()
+
     var delay: Long = 0L
     var responseObject: Any? = null
 
     fun handle(request: Request): Any? {
         val url = request.url
+        Log.d("badu", "url: $url")
         val segments = url.pathSegments
 
         if (responseObject == null) {
@@ -31,28 +33,42 @@ data class MockApi(
             return null
         }
 
-        if (segments.size != urlSpecs.size) {
-            return null
-        }
+        when (urlSpec) {
+            is UrlSpec.Detail -> {
+                if (segments.size != urlSpec.urlSpecs.size) {
+                    return null
+                }
 
-        urlSpecs.forEachIndexed { index, spec ->
-            if (spec != ANY_PATH && spec != segments[index]) {
-                return null
+                urlSpec.urlSpecs.forEachIndexed { index, spec ->
+                    if (spec != ANY_PATH && spec != segments[index]) {
+                        return null
+                    }
+                }
+
+                if (url.querySize != urlSpec.urlParams.size) {
+                    return null
+                }
+
+                urlSpec.urlParams.forEach {
+                    val realValue = url.queryParameter(it.key)
+                    val mockValue = it.value
+                    if (mockValue == ANY_PARAM_VALUE && realValue != null) {
+                        return@forEach
+                    }
+                    if (realValue != mockValue) {
+                        return null
+                    }
+                }
             }
-        }
+            is UrlSpec.Regex -> {
+                if (urlSpec.isContainsMatched) {
+                    if (urlSpec.rules.toRegex().containsMatchIn(url.toString()).not())
+                        return null
 
-        if (url.querySize != urlParams.size) {
-            return null
-        }
-
-        urlParams.forEach {
-            val realValue = url.queryParameter(it.key)
-            val mockValue = it.value
-            if (mockValue == ANY_PARAM_VALUE && realValue != null) {
-                return@forEach
-            }
-            if (realValue != mockValue) {
-                return null
+                } else {
+                    if (urlSpec.rules.toRegex().matches(url.toString()).not())
+                        return null
+                }
             }
         }
 
@@ -69,7 +85,7 @@ data class MockApi(
     fun params(init: Params.() -> Unit) {
         val params = Params()
         params.init()
-        urlParams.putAll(params)
+        (urlSpec as? UrlSpec.Detail)?.urlParams?.putAll(params)
     }
 
     fun response(block: () -> Any) {
@@ -86,19 +102,29 @@ data class MockApi(
     }
 }
 
-fun api(vararg urlSpecs: String, init: MockApi.() -> Unit = {}): MockApi {
+fun apiDetail(vararg urlSpecs: String, init: MockApi.() -> Unit = {}): MockApi {
     val list = mutableListOf<String>().apply {
         for (urlSpec in urlSpecs) {
             add(urlSpec)
         }
     }
-    val api = MockApi(list)
+    val api = MockApi(UrlSpec.Detail(list))
     api.init()
     return api
 }
 
-fun api(urlSpecs: List<String>, init: MockApi.() -> Unit = {}): MockApi {
-    val api = MockApi(urlSpecs)
+fun apiDetail(urlSpecs: List<String>, init: MockApi.() -> Unit = {}): MockApi {
+    val api = MockApi(UrlSpec.Detail(urlSpecs))
+    api.init()
+    return api
+}
+
+fun apiRegex(
+    rule: String,
+    isContainsMatched: Boolean = true,
+    init: MockApi.() -> Unit = {}
+): MockApi {
+    val api = MockApi(UrlSpec.Regex(rule, isContainsMatched))
     api.init()
     return api
 }

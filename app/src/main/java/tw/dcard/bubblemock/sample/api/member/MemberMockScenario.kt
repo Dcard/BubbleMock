@@ -1,7 +1,8 @@
 package tw.dcard.bubblemock.sample.api.member
 
 import tw.dcard.bubblemock.model.MockScenario
-import tw.dcard.bubblemock.model.api
+import tw.dcard.bubblemock.model.apiDetail
+import tw.dcard.bubblemock.model.apiRegex
 import tw.dcard.bubblemock.model.scenario
 import tw.dcard.bubblemock.module.MockBubbleManager
 import tw.dcard.bubblemock.sample.model.Member
@@ -13,7 +14,7 @@ object MemberMockScenario {
                 true
             }
             add {
-                api("members") {
+                apiRegex("members") {
                     response {
                         getMembers(5)
                     }
@@ -22,7 +23,7 @@ object MemberMockScenario {
         },
         scenario(page = "Main Page", name = "Member List - lots data with long delay") {
             add {
-                api("members") {
+                apiDetail("members") {
                     response {
                         getMembers(20)
                     }
@@ -34,7 +35,7 @@ object MemberMockScenario {
         },
         scenario(page = "Main Page", name = "Member List - empty") {
             add {
-                api("members") {
+                apiDetail("members") {
                     response {
                         getMembers(0)
                     }
@@ -43,7 +44,7 @@ object MemberMockScenario {
         },
         scenario(page = "Main Page", name = "Member List - Error") {
             add {
-                api("members") {
+                apiDetail("members") {
                     response {
                         MockBubbleManager.RESPONSE_ERROR
                     }

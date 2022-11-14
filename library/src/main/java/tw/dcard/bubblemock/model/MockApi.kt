@@ -1,6 +1,5 @@
 package tw.dcard.bubblemock.model
 
-import android.util.Log
 import okhttp3.Request
 
 /**
@@ -22,7 +21,6 @@ data class MockApi(
 
     fun handle(request: Request): Any? {
         val url = request.url
-        Log.d("badu", "url: $url")
         val segments = url.pathSegments
 
         if (responseObject == null) {
